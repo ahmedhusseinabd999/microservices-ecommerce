@@ -1,0 +1,16 @@
+# Terraform local state and binary plugins
+**/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+crash.log
+
+# Sensitive credentials & keys
+*.pem
+*.key
+id_rsa*
+*.tfvars
+
+# Temp and log files
+*.log
+.DS_Store
