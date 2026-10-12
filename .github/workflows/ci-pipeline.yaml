@@ -1,0 +1,39 @@
+name: CI Infrastructure & Manifests Validation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate-terraform:
+    name: Terraform Format & Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Verify Terraform Formatting
+        run: terraform -chdir=terraform-files fmt -check
+
+      - name: Initialize & Validate Terraform
+        run: |
+          terraform -chdir=terraform-files init -backend=false
+          terraform -chdir=terraform-files validate
+
+  validate-kubernetes:
+    name: K8s Manifests Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate YAML Syntax
+        run: |
+          python3 -c 'import yaml, glob; [list(yaml.safe_load_all(open(f))) for f in glob.glob("sock-shop/*.yaml")]'
